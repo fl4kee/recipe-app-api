@@ -25,4 +25,4 @@ RUN python -m venv /py && \
 
 ENV PATH="/py/bin:$PATH"
 
-USER django-user # This is the user that will run the container. This should be the last line as Docker uses the last switch
+USER django-user
