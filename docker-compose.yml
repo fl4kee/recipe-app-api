@@ -13,29 +13,34 @@ services:
     # If we make update locally it will be reflected in current container
     volumes:
       - ./app:/app
-    # command that is used to run service. It can be overwrited command with run command on docker-compose
+    # command that is used to run service. It can be overwrited with run command on docker-compose
     # but by default it runs this command
     command: >
       sh -c "python manage.py wait_for_db && 
              python manage.py migrate && 
              python manage.py runserver 0.0.0.0:8000"
+    # set env variables so app can connect to database
     environment:
-      - DB_HOST=db
-      - DB_NAME=devdb
+      - DB_HOST=db # here we can use just the name of db service
+      - DB_NAME=devdb # these envs should match those that we set in db service section
       - DB_USER=devuser
       - DB_PASS=changeme
+    # app will run after db is created
     depends_on:
       - db
 
   db:
     image: postgres:13-alpine
+    # map volume on container with actual place of db on local machine
     volumes:
       - dev-db-data:/var/lib/postgresql/data
+    # env variables for initiating database for new db service.
     environment:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
 
 
+# define volumes
 volumes:
   dev-db-data:
