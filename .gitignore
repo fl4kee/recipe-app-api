@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 .idea/
+
+create_app_steps.txt
