@@ -27,7 +27,7 @@ class CommandTests(SimpleTestCase):
 
         # side_effect возвращает значение согласно типу. Если мы передаем исключение, то он вернет исключение
         # в примере ниже первые два раза возвращается ошибка psycopg
-        # вторые 3 раза OperationalError и в и тоге возвращает True
+        # вторые 3 раза OperationalError и в итоге возвращает True
         patched_check.side_effect = [Psycopg2Error] * 2 + [OperationalError] * 3 + [True]
 
         call_command('wait_for_db')
