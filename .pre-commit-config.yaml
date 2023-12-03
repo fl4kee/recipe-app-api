@@ -34,3 +34,4 @@ repos:
   hooks:
   - id: flake8
     exclude: ^(data|\w+/migrations)/
+    args: ['--max-line-length=160']

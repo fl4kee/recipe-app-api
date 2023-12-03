@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
@@ -22,7 +22,9 @@ urlpatterns = [
     path('api/schema', SpectacularAPIView.as_view(), name='api-schema'),  # генерация схемы для АПИ
     path(
         'api/docs/',
-        SpectacularSwaggerView.as_view(url_name='api-schema'),  # as_view используется на classed based вьюхах
+        SpectacularSwaggerView.as_view(url_name='api-schema'),  # as_view используется на classed based представлениях
         name='api-docs',
-    )  # документация, которая будет использовать нашу схему для генерации графического интерфейса
+    ),  # документация, которая будет использовать нашу схему для генерации графического интерфейса
+    path('api/user/', include('user.urls')),
+
 ]
