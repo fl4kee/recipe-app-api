@@ -9,17 +9,18 @@ from django.db.utils import OperationalError
 
 
 class Command(BaseCommand):
-    """Django command to wait for database."""
+    """Комманда, которая дожидается ответа от базы данных"""
     def handle(self, *args, **options):
-        """Entrypoint for command."""
-        # self.stdout is a BaseCommand method. It is recommended to use it in commands
+        """Входная точка для команды."""
+        # self.stdout это BaseCommand метод. Его рекомендовано использовать для вывода в командах,
+        # можно использовать форматирование, перенаправлять вывод с помощью > и прочее
         self.stdout.write('Waiting for database...')
         db_up = False
         while db_up is False:
             try:
-                # self.check is used to perform a system check on various aspects of your Django project.
-                # It verifies the configuration, dependencies, and consistency
-                # of different components within the project.
+                # self.check используется для системных проверок множества аспектов в джанго проекте
+                # Проверяется конфигурация, зависимости и согласованность
+                # разных компонентов внутри проекта
                 self.check(databases=['default'])
                 db_up = True
             except (Psycopg2OpError, OperationalError):

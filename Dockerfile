@@ -9,21 +9,33 @@ WORKDIR /app
 EXPOSE 8000
 
 ARG DEV=false
-RUN python -m venv /py && \
-    /py/bin/pip install --upgrade pip && \
-    apk add --update --no-cache postgresql-client && \
-    apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev && \
-    /py/bin/pip install -r /tmp/requirements.txt && \
-    if [ $DEV = "true" ]; \
-        then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
-    fi && \
-    rm -rf /tmp && \
-    apk del .tmp-build-deps && \
-    adduser \
-        --disabled-password \
-        --no-create-home \
-        django-user
+# Set up virtual environment
+RUN python -m venv /py
+ENV PATH="/py/bin:$PATH"
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Install PostgreSQL client
+RUN apk add --update --no-cache postgresql-client
+
+# Install build dependencies
+RUN apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev
+
+# Install Python dependencies
+RUN pip install -r /tmp/requirements.txt
+
+# Install development dependencies if needed
+ARG DEV=false
+RUN if [ "$DEV" = "true" ]; then pip install -r /tmp/requirements.dev.txt; fi
+
+# Clean up
+RUN rm -rf /tmp && apk del .tmp-build-deps
+
+# Create non-root user
+RUN adduser --disabled-password --no-create-home django-user
+
 
 ENV PATH="/py/bin:$PATH"
 
