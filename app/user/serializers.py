@@ -1,7 +1,8 @@
 """
 Сериализаторы для user API
 """
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 
@@ -25,3 +26,30 @@ class UserSerializer(serializers.ModelSerializer):
         Нам нужно, чтобы пароль хэшировался, поэтому используем create_user
         """
         return get_user_model().objects.create_user(**validated_data)
+
+
+class AuthTokenSerializer(serializers.Serializer):
+    """Сериализатор для токена авторизации"""
+    email = serializers.EmailField()
+    password = serializers.CharField(
+        style={'input_type': 'password'},  # текст по умолчанию прячется с этим input_type
+        trim_whitespace=False,  # по умолчанию drf убирает пробелы
+    )
+
+    def validate(self, attrs):
+        """Валидирует и аутентифицирует пользователя"""
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        user = authenticate(
+            request=self.context.get('request'),
+            username=email,
+            password=password,
+        )
+
+        if not user:
+            msg = _('Не возможно авторизоваться с переданными кредами')
+            raise serializers.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs
